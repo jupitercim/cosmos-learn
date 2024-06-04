@@ -1,0 +1,1 @@
+https://docs.cosmwasm.com/docs/getting-started/compile-contract
