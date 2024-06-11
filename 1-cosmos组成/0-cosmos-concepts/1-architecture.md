@@ -29,7 +29,7 @@ Created in 2014, [Tendermint](https://tendermint.com/) accelerates the developme
 
 Tendermint modules **attend to consensus and networking**, which are important components of any blockchain. This frees developers to focus on the application level without descending into lower-level blockchain concerns such as peer discovery, block propagation, consensus, and transaction finalization. Without Tendermint, developers would be forced to build software to address these concerns, which would add additional time, complexity, and cost to the development of their applications.
 
-![Blockchain application architecture overview](/academy/2-cosmos-concepts/images/architecture_overview.png)
+![Blockchain application architecture overview](./images/architecture_overview.png)
 
 A blockchain node for an application-focused Cosmos blockchain consists of a state-machine, built with the Cosmos SDK, and the consensus and networking layer, which are handled by [CometBFT](https://docs.cometbft.com/v0.37/).
 
@@ -85,7 +85,7 @@ Validators and delegators are the parties who vote on proposals, with weights pr
 
 CometBFT is connected to the application by a socket protocol. ABCI provides a socket for applications written in other languages. If the application is written in the same language as the CometBFT implementation, the socket is not used.
 
-![The application, ABCI, and CometBFT](/academy/2-cosmos-concepts/images/ABCI_3.png)
+![The application, ABCI, and CometBFT](./images/ABCI_3.png)
 
 CometBFT provides security guarantees, including the following:
 
@@ -180,7 +180,7 @@ If you want to continue exploring ABCI, you can find more detailed information h
 
 A blockchain is a replicated state machine at its core. A **state machine** is a computer science concept, in which a machine can have multiple states but only one state at a time. It follows a state transition process (or a set of defined processes), which is the only way the state changes from the old or **initial state (`S`) to a new state (`S'`)**.
 
-![State change](/academy/2-cosmos-concepts/images/state_machine_1.png)
+![State change](./images/state_machine_1.png)
 
 The **state transition function** in a blockchain is synonymous with a transaction. Given an initial state, a confirmed transaction, and a set of rules for interpreting that transaction, the machine transitions to a new state. The rules of interpretation are defined at the application layer.
 
@@ -190,7 +190,7 @@ Blockchains are distributed, and transactions arrive in batches called blocks. T
 
 The state of the initialized blockchain, in which "nothing has happened yet", is called **Genesis state** (`S`). The current state of the blockchain (`S'`) can always be achieved by applying all the transactions performed to the Genesis state.
 
-![State change](/academy/2-cosmos-concepts/images/state_machine_2.png)
+![State change](./images/state_machine_2.png)
 
 Developers can create the state machine using the Cosmos SDK. This includes:
 
