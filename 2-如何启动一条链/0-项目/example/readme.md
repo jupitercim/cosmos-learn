@@ -1,9 +1,9 @@
-# hello
-**hello** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://ignite.com/cli).
+# example
+**example** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://ignite.com/cli).
 
 ## Get started
 
-```
+```sh
 ignite chain serve
 ```
 
@@ -21,6 +21,9 @@ For a Vue frontend, use: `ignite scaffold vue`
 For a React frontend, use: `ignite scaffold react`
 These commands can be run within your scaffolded blockchain project. 
 
+```sh
+ignite scaffold vue
+```
 
 For more information see the [monorepo for Ignite front-end development](https://github.com/ignite/web).
 
@@ -38,9 +41,9 @@ After a draft release is created, make your final changes from the release page 
 To install the latest version of your blockchain node's binary, execute the following command on your machine:
 
 ```
-curl https://get.ignite.com/username/hello@latest! | sudo bash
+curl https://get.ignite.com/username/example@latest! | sudo bash
 ```
-`username/hello` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
+`username/example` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
 
 ## Learn more
 

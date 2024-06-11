@@ -48,13 +48,13 @@
         "tx_sig_limit": "7",
         "tx_size_cost_per_byte": "10",
         "sig_verify_cost_ed25519": "590",
-        "sig_verify_cost_secp256k1": "1000"
+        "sig_verify_cost_secp256k1": "1000" //
       },
       "accounts": [
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
           "account_number": "0",
-          "address": "kava1ypjp0m04pyp73hwgtc0dgkx0e9rrydecm054da",
+          "address": "kava1ypjp0m04pyp73hwgtc0dgkx0e9rrydecm054da",    ## kava+version+base58{}, @mark 
           "pub_key": null,
           "sequence": "0"
         },
@@ -65,97 +65,7 @@
           "pub_key": null,
           "sequence": "0"
         },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1agcvt07tcw0tglu0hmwdecsnuxp2yd45f3avgm",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1g33w0mh4mjllhaj3y4dcwkwquxgwrma9ga5t94",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1kla4wl0ccv7u85cemvs3y987hqk0afcv7vue84",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1ynf22ap74j6znl503a56y23x5stfr0aw5kntp8",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava14q5sawxdxtpap5x5sgzj7v4sp3ucncjlpuk3hs",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1z3ytjpr6ancl8gw80z6f47z9smug7986x29vtj",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1j9je7f6s0v6k7dmgv6u5k5ru202f5ffsc7af04",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1ektgdyy0z23qqnd67ns3qvfzgfgjd5xe82lf5c",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1acge4tcvhf3q6fh53fgwaa7vsq40wvx6wn50em",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1sw54s6gq76acm35ls6m5c0kr93dstgrh6eftld",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1t4dvu32e309pzhmdn3aqcjlj79h9876plynrfm",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava1wuzhkn2f8nqe2aprnwt3jkjvvr9m7dlkpumtz2",
-          "pub_key": null,
-          "sequence": "0"
-        },
-        {
-          "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "account_number": "0",
-          "address": "kava173w2zz287s36ewnnkf4mjansnthnnsz7rtrxqc",
-          "pub_key": null,
-          "sequence": "0"
-        },
+ 
         {
           "@type": "/cosmos.vesting.v1beta1.PeriodicVestingAccount",
           "base_vesting_account": {
@@ -198,66 +108,7 @@
           },
           "code_hash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
         },
-        {
-          "@type": "/ethermint.types.v1.EthAccount",
-          "base_account": {
-            "address": "kava1r3emvfrc242jcfr9f9ygc34ztpp58xxu6spvdq",
-            "pub_key": null,
-            "account_number": "0",
-            "sequence": "0"
-          },
-          "code_hash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
-        },
-        {
-          "@type": "/ethermint.types.v1.EthAccount",
-          "base_account": {
-            "address": "kava10wlnqzyss4accfqmyxwx5jy5x9nfkwh6qm7n4t",
-            "pub_key": null,
-            "account_number": "0",
-            "sequence": "3"
-          },
-          "code_hash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
-        },
-        {
-          "@type": "/ethermint.types.v1.EthAccount",
-          "base_account": {
-            "address": "kava15tmj37vh7ch504px9fcfglmvx6y9m70646ev8t",
-            "pub_key": null,
-            "account_number": "0",
-            "sequence": "0"
-          },
-          "code_hash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
-        },
-        {
-          "@type": "/ethermint.types.v1.EthAccount",
-          "base_account": {
-            "account_number": "41",
-            "address": "kava1afcspmdzlqzn2c53krj4mt2yskv6wtrds2jqht",
-            "pub_key": null,
-            "sequence": "1"
-          },
-          "code_hash": "0x45d85d503e0143ffd2bb95d7bcb4dadfc1c05ff005fc7c26e63eb47f496fdafc"
-        },
-        {
-          "@type": "/ethermint.types.v1.EthAccount",
-          "base_account": {
-            "account_number": "0",
-            "address": "kava1vtf08rd2z9fm8qwxa54y3el5vues8ty64qcdyr",
-            "pub_key": null,
-            "sequence": "1"
-          },
-          "code_hash": "0xefe54230c8a74092194afdcb21c230b4cc4e07d0e6cd22bf0d3721f518df8ef2"
-        },
-        {
-          "@type": "/ethermint.types.v1.EthAccount",
-          "base_account": {
-            "account_number": "0",
-            "address": "kava1wrrekcy2h0zs9shkruuwqsvsldq8hm70yad4ke",
-            "pub_key": null,
-            "sequence": "1"
-          },
-          "code_hash": "0xd51cf04c1b78bc48b348e8455c4181539ab0b7ff84bb081fed109cd5feafaede"
-        }
+    
       ]
     },    //john
     "authz": {
@@ -268,7 +119,7 @@
             "msg": "/cosmos.bank.v1beta1.MsgMultiSend"
           },
           "expiration": null,
-          "grantee": "kava10d07y265gmmuvt4z0w9aw880jnsr700jxh8cq5",
+          "grantee": "kava10d07y265gmmuvt4z0w9aw880jnsr700jxh8cq5", # 授权者
           "granter": "kava17d2wax0zhjrrecvaszuyxdf5wcu5a0p4qlx3t5"
         },
         {

@@ -1,26 +1,16 @@
-<!--lint disable double-link-->
-# Awesome Cosmos [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 
 ## Contents
 
-* [Core Components](#core-components)
-* [Documentation](#documentation)
 * [Block Explorers](#block-explorers)
     * [Visual Block Explorers](#visual-block-explorers)
     * [Terminal Block Explorers](#terminal-block-explorers)
+* [Wallets](#wallets)
 * [Chain Registry](#chain-registry)
 * [Validators](#validators)
 * [Cosmos SDK Modules](#cosmos-sdk-modules)
 * [Monitoring](#monitoring)
 * [Indexers](#indexers)
-* [Frameworks](#frameworks)
-* [Virtual Machines](#virtual-machines)
 * [IBC](#ibc)
-* [Ecosystem](#ecosystem)
-* [Wallets](#wallets)
-* [Blogs](#blogs)
-    * [Articles](#articles)
-* [Related](#related)
 
 ## Core Components
 
@@ -44,46 +34,14 @@
 * [CosmWasm](https://docs.cosmwasm.com/docs/1.0/)
 * [Cosmology](https://cosmology.tech/learn)
 
-## Client Libraries
-
-### Go
-
-* [Ignite CLI](https://github.com/ignite/cli) - All-in-one platform to build, launch, and maintain any crypto application on a sovereign and secured blockchain. Quickly bootstraps a new Cosmos SDK blockchain with UI and support to create new and work conveniently with existing Cosmos SDK modules.
-
-### JavaScript
-
-* [cosmos/cosmjs](https://github.com/cosmos/cosmjs) - The Cosmos JavaScript library.
-* [telescope](https://github.com/osmosis-labs/telescope) - Typescript library generator built on top of CosmJS.
-* [chainapsis/cosmosjs](https://github.com/chainapsis/cosmosjs) - Chainapsis Signing & API Library.
-* [cosmos-client/cosmos-client-ts](https://github.com/cosmos-client/cosmos-client-ts) - JavaScript / TypeScript client for Cosmos SDK blockchains.
-* [cosmology-tech/chain-registry](https://github.com/cosmology-tech/chain-registry) - A npm package for the official Cosmos Chain Registry.
-* [strangelove-ventures/graz](https://github.com/strangelove-ventures/graz) - Collection of React hooks to interact with wallets, signers, signing clients, etc.
-* [cosmology-tech/create-cosmos-app](https://github.com/cosmology-tech/create-cosmos-app) - A npm package to bootstrap a Cosmos Web UI.
-* [cosmology-tech/cosmos-kit](https://github.com/cosmology-tech/cosmos-kit) - A wallet connector for the Cosmos.
-* [nabla-studio/quirks](https://github.com/nabla-studio/quirks) - A universal wallet adapter for your Cosmos dApps, that works on both mobile and browser.
-* [toschdev/bip44](https://github.com/toschdev/cosmos-bip44) - Cosmos BIP44 implementation in JavaScript for development and education learning.
-
-### Python
-
-* [cosmpy](https://github.com/fetchai/cosmpy) - A Python client library for interacting with blockchains based on the Cosmos SDK.
-* [pyCosmicWrap](https://github.com/ChihuahuaChain/pyCosmicWrap/) - A python3 wrapper around Cosmos API/RPC.
-* [mospy](https://github.com/ctrl-Felix/mospy) - A Python library to create and sign transactions for Cosmos SDK based coins.
-* [cosmospy-protobuf](https://github.com/ctrl-Felix/cosmospy-protobuf) - A Python library containing all compiled protobuf files (works very good for grpc).
-* [fx-py-sdk](https://github.com/functionx/fx-py-sdk) - The Cosmos Python client library.
-
-### Rust
-
-* [CosmWasm/cosmwasm](https://github.com/CosmWasm/cosmwasm) - WebAssembly Smart Contracts for the Cosmos SDK.
-* [iqlusioninc/stdtx](https://github.com/iqlusioninc/crates) - A collection of open source Rust crates from iqlusion.
-* [peggyjv/ocular](https://github.com/peggyjv/ocular) - A client library for Cosmos SDK chains focusing on pleasant UX.
-
 ## Block Explorers
 
 * [ATOMScan](https://atomscan.com)
-* [Big Dipper](https://bigdipper.live) - [Source](https://github.com/forbole/big-dipper-2.0-cosmos)
-* [IOBScan](https://ibc.iobscan.io/)
 * [Mintscan](https://www.mintscan.io)
     * [Mintscan for Cosmos Hub Testnet](https://cosmoshub-testnet.mintscan.io/cosmoshub-testnet)
+* [Big Dipper](https://bigdipper.live) - [Source](https://github.com/forbole/big-dipper-2.0-cosmos)
+* [IOBScan](https://ibc.iobscan.io/)
+
 * [NG Explorers](https://explorers.guru/)
 * [Ping.pub](https://ping.pub) - [Source](https://github.com/ping-pub/explorer)
 * [Stake ID](https://stake.id)
@@ -155,23 +113,6 @@ The best place to find an accurate list of the Cosmos SDK modules is the project
 * [Cosmos Indexer](https://github.com/DefiantLabs/cosmos-indexer) - A generalized DB schema indexer with correlation and direct database indexing in Go.
 * [BDJuno](https://github.com/forbole/bdjuno) - All the chains' data that are queried from the RPC and gRPC endpoints are stored inside a PostgreSQL database on top of which GraphQL APIs can then be created using Hasura.
 
-## Frameworks
-
-* [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/) - A Framework for Building High Value Public Blockchains in Go.
-* [Orga](https://github.com/nomic-io/orga) - ABCI framework for state machine transitions in Rust.
-* [CosmosSwift](https://github.com/CosmosSwift) - Build blockchain applications in Swift on top of the Tendermint consensus.
-* [ABCI-RS](https://github.com/devashishdxt/abci-rs) - Rust crate for creating ABCI applications.
-* [CosmRS](https://github.com/cosmos/cosmos-rust/tree/main/cosmrs) - Framework for building Cosmos blockchain applications in Rust.
-
-## Virtual Machines
-
-Modules or frameworks for virtual machines that run in the Cosmos SDK
-
-* [Agoric SDK](https://github.com/Agoric/agoric-sdk) - Agoric JavaScript Smart Contract Platform.
-* [CosmWasm](https://github.com/CosmWasm/cosmwasm) - WASM Virtual Machine & Rust Smart Contracts.
-* [Ethermint](https://github.com/evmos/ethermint) - Ethereum Virtual Machine.
-* [Polaris](https://github.com/berachain/polaris) - Modular Ethereum Virtual Machine.
-
 ## IBC
 
 * [IBCprotocol.dev](https://ibcprotocol.dev/) - IBC Protocol website.
@@ -184,54 +125,7 @@ Modules or frameworks for virtual machines that run in the Cosmos SDK
 * [confio/ts-relayer](https://github.com/confio/ts-relayer) - IBC Relayer in TypeScript.
 * [local-interchain](https://github.com/Reecepbcups/local-interchain) - Quickly spin up a local IBC development environment on any operating system.
 
-## Testing
 
-* [interchaintest](https://github.com/strangelove-ventures/interchaintest) - E2E testing framework for IBC Chains.
-* [atomkraft](https://github.com/informalsystems/atomkraft-cosmos) - E2E testing framework of Cosmos SDK blockchains.
-* [python-iavl](https://github.com/crypto-com/python-iavl) - IAVL inspection tool implemented in Python.
-* [cosmos-sdk-codeql](https://github.com/crypto-com/cosmos-sdk-codeql) - CodeQL queries for common Cosmos SDK bugs.
-* [tm-load-test](https://github.com/informalsystems/tm-load-test) - CometBFT load test application.
-* [cosmosloadtester](https://github.com/orijtech/cosmosloadtester) - Load tester for Cosmos SDK blockchains.
-* [CometMock](https://github.com/informalsystems/CometMock) - Drop-in replacement for CometBFT in end-to-end tests.
-* [quint](https://github.com/informalsystems/quint) - Executable specification language with delightful tooling.
-* [apalache](https://github.com/informalsystems/apalache) - APALACHE: symbolic model checker for TLA+ and Quint.
-
-## Templates
-
-Templates to help you get started with building a Cosmos SDK blockchain.
-
-* [ignite](https://github.com/cli) - Quickly bootstrap a new Cosmos SDK blockchain with UI and support to create new and work conveniently with existing Cosmos SDK modules.
-* [cosmosregistry/example](https://github.com/cosmosregistry/example) - Template and example repository of a Cosmos SDK module.
-* [cosmosregistry/chain-minimal](https://github.com/cosmosregistry/chain-minimal) -  Template and example of a minimal Cosmos SDK blockchain.
-* [spawn](https://github.com/rollchains/spawn) -  Generate a new Cosmos SDK blockchain with testing, GitHub integrations, and easy instant testnets.
-
-## Ecosystem
-
-The most up-to-date list of projects built using Cosmos SDK can be found on the [Cosmos Directory](https://cosmos.directory).
 
 ## Wallets
 
-A list of wallets supporting Cosmos chains is <https://cosmos.network/ecosystem/wallets>.
-
-## Blogs
-
-**Disclaimer: This community-maintained repo does not reflect the views of any official entity.**
-
-As the ecosystem grows, so does the content. DYOR and follow the projects you find interesting.
-
-* [What is Cosmos?](https://cosmos.network/intro/)
-* [Cosmos Blog](https://blog.cosmos.network/)
-* [Interchain Foundation Blog](https://interchain-io.medium.com)
-
-### Articles
-
-* [Cosmos Dev Series: Cosmos Blockchain Upgrade](https://zerofruit.medium.com/cosmos-dev-series-cosmos-sdk-based-blockchain-upgrade-b5e99181554c)
-* [Hardening guides](https://cyber.orijtech.com/scsec/cosmos-hardening)
-* [How to connect your frontend to Cosmos blockchain](https://dev.to/kikiding/how-to-connect-your-frontend-to-cosmos-blockchain-5fcn)
-* [(Not So) Smart Cosmos, examples of common Cosmos app vulnerabilities](https://github.com/crytic/building-secure-contracts/tree/master/not-so-smart-contracts/cosmos)
-* [Go coding guide](https://cyber.orijtech.com/scsec/cosmos-go-coding-guide)
-* [The Cosmos Security Handbook - Part 1](https://www.faulttolerant.xyz/2024-01-16-cosmos-security-1)
-
-## Related
-
-* [Awesome CosmWasm](https://github.com/InterWasm/cw-awesome)
