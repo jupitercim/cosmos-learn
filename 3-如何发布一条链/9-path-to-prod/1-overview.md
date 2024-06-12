@@ -1,37 +1,37 @@
 ---
-title: Run in Production
+title: 在生产环境中运行
 order: 2
-description: What does running in production entail?
+description: 在生产环境中运行意味着什么？
 tags:
-  - concepts
+  - 概念
   - cosmos-sdk
   - dev-ops
 ---
 
-# Run in Production
+# 在生产环境中运行
 
-You have coded your Cosmos chain. It may not be feature complete, but unit and integration tests are passing. You ran it locally on your computer and interacted with it via the command line. Congratulations, you have already accomplished a lot.
+您已编写了您的 Cosmos 链。它可能还不完全具备功能，但单元测试和集成测试都通过了。您在本地计算机上运行它，并通过命令行与之交互。恭喜，您已经取得了很大的进展。
 
-Now is the time to release it into the wild, perhaps as a testnet. You can take progressive steps to achieve this. That is what this chapter is about.
+现在是将其释放到外界的时候了，也许作为一个测试网络。您可以采取渐进的步骤来实现这一点。这就是本章的内容所涉及的内容。
 
-What is the desired outcome? You want to have:
+期望的结果是什么？您希望有：
 
-* A _mainnet_ blockchain and at least one _testnet_ blockchain.
-* Each blockchain running on multiple machines, a number of them validators.
-* Validators that are set up to mitigate attacks.
-* A faucet for your testnet(s).
-* Public RPC ports for your users.
-* When necessary, nodes that are running in preparation of a migration.
-* When wanted, a working Inter-Blockchain Communication Protocol (IBC) infrastructure.
+* 一个 _主网_ 区块链和至少一个 _测试网_ 区块链。
+* 每个区块链在多台计算机上运行，其中一些是验证者。
+* 设置了用于减轻攻击的验证者。
+* 为您的测试网提供的水龙头。
+* 用户的公共 RPC 端口。
+* 必要时，运行节点以准备迁移。
+* 需要时，一个工作的区块链间通信协议（IBC）基础设施。
 
-A good way to divide and conquer is to go with:
+分而治之的一个好方法是按照以下方式进行：
 
-* Binary software preparation
-* Key management
-* Genesis generations
-* Network setup
-* Software run and launch
-* Migration preparation
-* IBC preparation
+* 二进制软件准备
+* 密钥管理
+* 创世块生成
+* 网络设置
+* 软件运行和启动
+* 迁移准备
+* IBC 准备
 
-Start with the binary preparation in the [next section](./2-software.md).
+从下一节中的二进制准备开始。

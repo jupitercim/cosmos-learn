@@ -1,0 +1,7 @@
+Account模块：司账户管理的account模块
+Bank模块：司转账交易
+Staking模块：司代币质押
+Slashing模块：司惩罚策略的slashing
+Distribution模块：司奖励分配的distribution模块
+Supply模块：司新币生成的
+Gov模块：司链上治理
