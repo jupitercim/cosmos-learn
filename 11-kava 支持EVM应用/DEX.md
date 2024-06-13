@@ -1,8 +1,6 @@
 Metamask 中添加 http://10.100.42.143:8545/
 
 
-Metamask 中添加 http://10.100.42.143:8545/
-
 
 
 
@@ -18,5 +16,18 @@ dkava query bank balances kava15tmj37vh7ch504px9fcfglmvx6y9m70646ev8t
 
 
 
-http://10.100.42.143/ 
+浏览区 http://10.100.42.143/ 
 
+
+
+```bash
+# Add an alias to the dockerized kava cli
+alias dkava='docker exec -it generated-kavanode-1 kava'
+
+# Confirm that the alias has been added
+alias kava
+
+# For versions before v0.16.x
+alias dkvcli='docker exec -it generated-kavanode_1 kvcli'
+```
+‰
