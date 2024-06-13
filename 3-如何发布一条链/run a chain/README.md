@@ -1,5 +1,5 @@
-# example
-**example** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://ignite.com/cli).
+# garyexample
+**garyexample** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://ignite.com/cli).
 
 ## Get started
 
@@ -38,9 +38,9 @@ After a draft release is created, make your final changes from the release page 
 To install the latest version of your blockchain node's binary, execute the following command on your machine:
 
 ```
-curl https://get.ignite.com/username/example@latest! | sudo bash
+curl https://get.ignite.com/username/garyexample@latest! | sudo bash
 ```
-`username/example` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
+`username/garyexample` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
 
 ## Learn more
 
