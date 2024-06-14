@@ -1,43 +1,30 @@
----
-ics: 20
-title: Fungible Token Transfer
-stage: draft
-category: IBC/APP
-requires: 25, 26
-kind: instantiation
-version compatibility: ibc-go v7.0.0 (ics20-1 supported only)
-author: Christopher Goes <cwgoes@interchain.berlin>
-created: 2019-07-15 
-modified: 2024-03-05
----
+## 概要
 
-## Synopsis
+本标准文档规定了跨两个不同链上的模块通过IBC通道转移同质化代币的包数据结构、状态机处理逻辑和编码细节。所提出的状态机逻辑允许在无需许可的通道开通情况下，安全地处理多链代币。此逻辑构成了一个“同质化代币转移桥接模块”，在IBC路由模块和主状态机上的现有资产追踪模块之间进行接口连接。
 
-This standard document specifies packet data structure, state machine handling logic, and encoding details for the transfer of fungible tokens over an IBC channel between two modules on separate chains. The state machine logic presented allows for safe multi-chain denomination handling with permissionless channel opening. This logic constitutes a "fungible token transfer bridge module", interfacing between the IBC routing module and an existing asset tracking module on the host state machine.
+## 动机
 
-### Motivation
+连接在IBC协议上的一组链的用户可能希望在另一条链上使用一条链上发行的资产，或许是为了利用额外的功能，如交易或隐私保护，同时保持与原发行链上资产的同质化。此应用层标准描述了一种协议，用于在连接IBC的链之间转移同质化代币，保留资产的同质化，保留资产所有权，限制拜占庭故障的影响，并且不需要额外的权限。
 
-Users of a set of chains connected over the IBC protocol might wish to utilise an asset issued on one chain on another chain, perhaps to make use of additional features such as exchange or privacy protection, while retaining fungibility with the original asset on the issuing chain. This application-layer standard describes a protocol for transferring fungible tokens between chains connected with IBC which preserves asset fungibility, preserves asset ownership, limits the impact of Byzantine faults, and requires no additional permissioning.
+## 定义
 
-### Definitions
+IBC处理器接口和IBC路由模块接口分别在ICS 25和ICS 26中定义。
 
-The IBC handler interface & IBC routing module interface are as defined in [ICS 25](../../core/ics-025-handler-interface) and [ICS 26](../../core/ics-026-routing-module), respectively.
+## 期望属性
 
-### Desired Properties
+- 保持同质化（双向锚定）。
+- 保持总供应量（在单一源链和模块上恒定或通货膨胀）。
+- 无需许可的代币转移，无需白名单连接、模块或面额。
+- 对称性（所有链都实现相同的逻辑，协议内不区分集线器和区域）。
+- 故障隔离：防止由于链B的拜占庭行为导致链A上代币的拜占庭膨胀（虽然任何将代币发送到链B的用户可能会面临风险）。
 
-- Preservation of fungibility (two-way peg).
-- Preservation of total supply (constant or inflationary on a single source chain & module).
-- Permissionless token transfers, no need to whitelist connections, modules, or denominations.
-- Symmetric (all chains implement the same logic, no in-protocol differentiation of hubs & zones).
-- Fault containment: prevents Byzantine-inflation of tokens originating on chain `A`, as a result of chain `B`'s Byzantine behaviour (though any users who sent tokens to chain `B` may be at risk).
+## 技术规范
 
-## Technical Specification
+### 数据结构
 
-### Data Structures
+只需要一种包数据类型：`FungibleTokenPacketData`，它指定了面额、金额、发送账户和接收账户；或者`FungibleTokenPacketDataV2`，它指定了在发送者和接收者之间传输的多个代币。支持v2的链可以可选地将v1包转换为仍在版本1上的通道。
 
-Only one packet data type is required: `FungibleTokenPacketData`, which specifies the denomination, amount, sending account, and receiving account or `FungibleTokenPacketDataV2` which specifies multiple tokens being sent between sender and receiver. A v2 supporting chain can optionally convert a v1 packet for channels that are still on version 1.
-
-```typescript
+```javascript
 interface FungibleTokenPacketData {
   denom: string
   amount: uint256
@@ -60,19 +47,19 @@ interface Token {
 }
 ```
 
-As tokens are sent across chains using the ICS 20 protocol, they begin to accrue a record of channels for which they have been transferred across. This information is encoded into the `trace` field in the token. 
+当代币通过ICS 20协议在链之间传输时，它们开始累积转移过的通道记录。这些信息被编码到代币的`trace`字段中。
 
-The ICS 20 token traces are represented by a list of the form `{ics20Port}/{ics20Channel}`, where `ics20Port` and `ics20Channel` are an ICS 20 port and channel on the current chain for which the funds exist. The port and channel pair indicate which channel the funds were previously sent through. Implementations are responsible for correctly parsing the IBC trace information and encoding it into the final on-chain denomination so that the same base denominations sent through different paths are not treated as being fungible.
+ICS 20代币追踪通过形如`{ics20Port}/{ics20Channel}`的列表表示，其中`ics20Port`和`ics20Channel`是当前链上资金存在的ICS 20端口和通道。端口和通道对表示资金以前通过的通道。实现负责正确解析IBC追踪信息并将其编码到最终的链上面额中，以确保通过不同路径发送的相同基本面额不会被视为同质化。
 
-A sending chain may be acting as a source or sink zone. When a chain is sending tokens across a port and channel which are not equal to the last prefixed port and channel pair, it is acting as a source zone. When tokens are sent from a source zone, the destination port and channel will be prepended to the trace (once the tokens are received) adding another hop to a tokens record. When a chain is sending tokens across a port and channel which are equal to the last prefixed port and channel pair, it is acting as a sink zone. When tokens are sent from a sink zone, the first element of the trace, which was the last port and channel pair added to the trace is removed (once the tokens are received), undoing the last hop in the tokens record. A more complete explanation is [present in the ibc-go implementation](https://github.com/cosmos/ibc-go/blob/457095517b7832c42ecf13571fee1e550fec02d0/modules/apps/transfer/keeper/relay.go#L18-L49).
+发送链可以作为源区或汇区。当一条链通过一个端口和通道发送代币，并且这个端口和通道不等于最后前缀的端口和通道对时，它充当源区。当代币从源区发送时，目标端口和通道将在接收代币后添加到追踪中，为代币记录增加一个跳跃。当一条链通过一个端口和通道发送代币，并且这个端口和通道等于最后前缀的端口和通道对时，它充当汇区。当代币从汇区发送时，追踪中的第一个元素，即最后添加到追踪中的端口和通道对将被移除，撤销代币记录中的最后一个跳跃。更完整的解释在ibc-go实现中。
 
-The following sequence diagram exemplifies the multi-chain token transfer dynamics. This process encapsulates the intricate steps involved in transferring tokens in a cycle that begins and ends on the same chain, traversing through Chain A, Chain B, and Chain C. The order of operations is meticulously outlined as `A -> B -> C -> A -> C -> B -> A`.
+以下序列图示例了多链代币转移的动态。这一过程封装了在链A、链B和链C之间转移代币的复杂步骤，转移周期以相同链为起点和终点，顺序为A -> B -> C -> A -> C -> B -> A。
 
-![Transfer Example](source-and-sink-zones.png)
+### 转移示例
 
-The acknowledgement data type describes whether the transfer succeeded or failed, and the reason for failure (if any).
+确认数据类型描述了转移是成功还是失败，以及失败的原因（如果有的话）。
 
-```typescript
+```javascript
 type FungibleTokenPacketAcknowledgement = FungibleTokenPacketSuccess | FungibleTokenPacketError;
 
 interface FungibleTokenPacketSuccess {
@@ -85,25 +72,25 @@ interface FungibleTokenPacketError {
 }
 ```
 
-Note that both the `FungibleTokenPacketData` as well as `FungibleTokenPacketAcknowledgement` must be JSON-encoded (not Protobuf encoded) when they serialized into packet data. Also note that `uint256` is string encoded when converted to JSON, but must be a valid decimal number of the form `[0-9]+`.
+请注意，`FungibleTokenPacketData`和`FungibleTokenPacketAcknowledgement`在序列化为包数据时必须进行JSON编码（而不是Protobuf编码）。还要注意，当转换为JSON时，`uint256`是字符串编码的，但必须是格式为`[0-9]+`的有效十进制数。
 
-The fungible token transfer bridge module tracks escrow addresses associated with particular channels in state. Fields of the `ModuleState` are assumed to be in scope.
+同质化代币转移桥接模块在状态中跟踪与特定通道关联的托管地址。`ModuleState`的字段被假定为范围内的。
 
-```typescript
+```javascript
 interface ModuleState {
   channelEscrowAddresses: Map<Identifier, string>
 }
 ```
 
-### Sub-protocols
+### 子协议
 
-The sub-protocols described herein should be implemented in a "fungible token transfer bridge" module with access to a bank module and to the IBC routing module.
+本文描述的子协议应在具有银行模块和IBC路由模块访问权限的“同质化代币转移桥接”模块中实现。
 
-#### Port & channel setup
+#### 端口和通道设置
 
-The `setup` function must be called exactly once when the module is created (perhaps when the blockchain itself is initialised) to bind to the appropriate port and create an escrow address (owned by the module).
+创建模块时（可能是在区块链本身初始化时）必须调用设置函数，绑定到适当的端口并创建一个由模块拥有的托管地址。
 
-```typescript
+```javascript
 function setup() {
   capability = routingModule.bindPort("transfer", ModuleCallbacks{
     onChanOpenInit,
@@ -121,22 +108,20 @@ function setup() {
 }
 ```
 
-Once the `setup` function has been called, channels can be created through the IBC routing module between instances of the fungible token transfer module on separate chains.
+一旦调用了设置函数，就可以通过IBC路由模块在不同链上的同质化代币转移模块实例之间创建通道。
 
-An administrator (with the permissions to create connections & channels on the host state machine) is responsible for setting up connections to other state machines & creating channels
-to other instances of this module (or another module supporting this interface) on other chains. This specification defines packet handling semantics only, and defines them in such a fashion
-that the module itself doesn't need to worry about what connections or channels might or might not exist at any point in time.
+管理员（具有在主状态机上创建连接和通道的权限）负责设置与其他状态机的连接，并创建与其他链上此模块（或支持此接口的其他模块）实例的通道。本规范仅定义包处理语义，并以这种方式定义，使得模块本身不需要担心在任何时间点上可能存在或不存在的连接或通道。
 
-#### Routing module callbacks
+### 路由模块回调
 
-##### Channel lifecycle management
+#### 通道生命周期管理
 
-Both machines `A` and `B` accept new channels from any module on another machine, if and only if:
+机器A和B仅在以下情况下接受来自其他机器上任何模块的新通道：
 
-- The channel being created is unordered.
-- The version string is `ics20-1` or `ics20-2`.
+- 被创建的通道是无序的。
+- 版本字符串是`ics20-1`或`ics20-2`。
 
-```typescript
+```javascript
 function onChanOpenInit(
   order: ChannelOrder,
   connectionHops: [Identifier],
@@ -145,24 +130,24 @@ function onChanOpenInit(
   counterpartyPortIdentifier: Identifier,
   counterpartyChannelIdentifier: Identifier,
   version: string) => (version: string, err: Error) {
-  // only unordered channels allowed
+  // 仅允许无序通道
   abortTransactionUnless(order === UNORDERED)
-  // assert that version is "ics20-1" or "ics20-2" or empty
-  // if empty, we return the default transfer version to core IBC
-  // as the version for this channel
+  // 断言版本是"ics20-1"或"ics20-2"或为空
+  // 如果为空，我们将默认传输版本返回给核心IBC
+  // 作为此通道的版本
   abortTransactionUnless(version === "ics20-2" || version === "ics20-1" || version === "")
-  // allocate an escrow address
+  // 分配托管地址
   channelEscrowAddresses[channelIdentifier] = newAddress(portIdentifier, channelIdentifier)
   if version == "" {
-    // default to latest supported version
+    // 默认使用最新支持的版本
     return "ics20-2", nil
   }
-  // If the version is not empty and is among those supported, we return the version
+  // 如果版本不为空且在支持的范围内，我们将返回该版本
   return version, nil 
 }
 ```
 
-```typescript
+```javascript
 function onChanOpenTry(
   order: ChannelOrder,
   connectionHops: [Identifier],
@@ -171,351 +156,23 @@ function onChanOpenTry(
   counterpartyPortIdentifier: Identifier,
   counterpartyChannelIdentifier: Identifier,
   counterpartyVersion: string) => (version: string, err: Error) {
-  // only unordered channels allowed
+  // 仅允许无序通道
   abortTransactionUnless(order === UNORDERED)
-  // assert that version is "ics20-1" or "ics20-2" 
+  // 断言对方版本是"ics20-1"或"ics20-2"
   abortTransactionUnless(counterpartyVersion === "ics20-1" || counterpartyVersion === "ics20-2")
-  // allocate an escrow address
+  // 分配托管地址
   channelEscrowAddresses[channelIdentifier] = newAddress(portIdentifier, channelIdentifier)
-  // return the same version as counterparty version so long as we support it
+  // 返回与对方版本相同的版本，只要我们支持它
   return counterpartyVersion, nil
 }
 ```
 
-```typescript
+```javascript
 function onChanOpenAck(
   portIdentifier: Identifier,
   channelIdentifier: Identifier,
   counterpartyChannelIdentifier: Identifier,
   counterpartyVersion: string) {
-  // port has already been validated
-  // assert that counterparty selected version is the same as our version
-  channel = provableStore.get(channelPath(portIdentifier, channelIdentifier))
-  abortTransactionUnless(counterpartyVersion === channel.version)
-}
-```
-
-```typescript
-function onChanOpenConfirm(
-  portIdentifier: Identifier,
-  channelIdentifier: Identifier) {
-  // accept channel confirmations, port has already been validated, version has already been validated
-}
-```
-
-```typescript
-function onChanCloseInit(
-  portIdentifier: Identifier,
-  channelIdentifier: Identifier) {
-    // always abort transaction
-    abortTransactionUnless(FALSE)
-}
-```
-
-```typescript
-function onChanCloseConfirm(
-  portIdentifier: Identifier,
-  channelIdentifier: Identifier) {
-  // no action necessary
-}
-```
-
-##### Packet relay
-
-In plain English, between chains `A` and `B`:
-
-- When acting as the source zone, the bridge module escrows an existing local asset denomination on the sending chain and mints vouchers on the receiving chain.
-- When acting as the sink zone, the bridge module burns local vouchers on the sending chains and unescrows the local asset denomination on the receiving chain.
-- When a packet times-out, local assets are unescrowed back to the sender or vouchers minted back to the sender appropriately.
-- Acknowledgement data is used to handle failures, such as invalid denominations or invalid destination accounts. Returning
-  an acknowledgement of failure is preferable to aborting the transaction since it more easily enables the sending chain
-  to take appropriate action based on the nature of the failure.
-
-Note: `constructOnChainDenom` is a helper function that will construct the local on-chain denomination for the bridged token. It **must** encode the trace and base denomination to ensure that tokens coming over different paths are not treated as fungible. The original trace and denomination must be retrievable by the state machine so that they can be passed in their original forms when constructing a new IBC path for the bridged token. The ibc-go implementation handles this by creating a local denomination: `hash(trace+base_denom)`.
-
-`sendFungibleTokens` must be called by a transaction handler in the module which performs appropriate signature checks, specific to the account owner on the host state machine.
-
-```typescript
-function sendFungibleTokens(
-  tokens: []Token,
-  sender: string,
-  receiver: string,
-  memo: string,
-  sourcePort: string,
-  sourceChannel: string,
-  timeoutHeight: Height,
-  timeoutTimestamp: uint64, // in unix nanoseconds
-): uint64 {
-  for token in tokens {
-    prefix = "{sourcePort}/{sourceChannel}/"
-    // we are the source if the denomination is not prefixed
-    source = token.trace[0] != prefix
-    onChainDenom = constructOnChainDenom(token.trace, token.denom)
-      
-    if source {
-      // determine escrow account
-      escrowAccount = channelEscrowAddresses[sourceChannel]
-      // escrow source tokens (assumed to fail if balance insufficient)
-      bank.TransferCoins(sender, escrowAccount, onChainDenom, token.amount)
-    } else {
-      // receiver is source chain, burn vouchers
-      bank.BurnCoins(sender, onChainDenom, token.amount)
-    }
-  }
-
-  channel = provableStore.get(channelPath(sourcePort, sourceChannel))
-  // getAppVersion returns the transfer version that is embedded in the channel version
-  // as the channel version may contain additional app or middleware version(s)
-  transferVersion = getAppVersion(channel.version)
-  if transferVersion == "ics20-1" {
-    abortTransactionUnless(len(tokens) == 1)
-    v1Denom = tokens[0].trace + tokens[0].denom)
-    data = FungibleTokenPacketData{v1Denom, tokens[0].amount, sender, receiver, memo}
-  } else if transferVersion == "ics20-2" {
-    // create FungibleTokenPacket data
-    data = FungibleTokenPacketDataV2{tokens, sender, receiver, memo}
-  } else {
-    // should never be reached as transfer version must be negotiated to be either
-    // ics20-1 or ics20-2 during channel handshake
-    abortTransactionUnless(false)
-  }
-
-  // send packet using the interface defined in ICS4
-  sequence = handler.sendPacket(
-    getCapability("port"),
-    sourcePort,
-    sourceChannel,
-    timeoutHeight,
-    timeoutTimestamp,
-    json.marshal(data) // json-marshalled bytes of packet data
-  )
-
-  return sequence
-}
-```
-
-`onRecvPacket` is called by the routing module when a packet addressed to this module has been received.
-
-```typescript
-function onRecvPacket(packet: Packet) {
-  channel = provableStore.get(channelPath(portIdentifier, channelIdentifier))
-  // getAppVersion returns the transfer version that is embedded in the channel version
-  // as the channel version may contain additional app or middleware version(s)
-  transferVersion = getAppVersion(channel.version)
-  if transferVersion == "ics20-1" {
-     FungibleTokenPacketData data = UnmarshalJSON(packet.data)
-     trace, denom = parseICS20V1Denom(data.denom)
-     token = Token{
-       denom: denom
-       trace: trace
-       amount: packet.amount
-     }
-     tokens = []Token{token}
-  } else if transferVersion == "ics20-2" {
-    FungibleTokenPacketDataV2 data = UnmarshalJSON(packet.data)
-    tokens = data.tokens
-  } else {
-    // should never be reached as transfer version must be negotiated to be either
-    // ics20-1 or ics20-2 during channel handshake
-    abortTransactionUnless(false)
-  }
-
-  // construct default acknowledgement of success
-  FungibleTokenPacketAcknowledgement ack = FungibleTokenPacketAcknowledgement{true, null}
-  prefix = "{packet.sourcePort}/{packet.sourceChannel}/"
-  for token in tokens {
-    assert(token.denom !== "")
-    assert(token.amount > 0)
-    assert(token.sender !== "")
-    assert(token.receiver !== "")
-      
-    // we are the source if the packets were prefixed by the sending chain
-    source = token.trace[0] == prefix
-    if source {
-      // since we are receiving back to source we remove the prefix from the trace
-      onChainTrace = token.trace[1:]
-      onChainDenom = constructOnChainDenom(onChainTrace, token.denom)
-      // receiver is source chain: unescrow tokens
-      // determine escrow account
-      escrowAccount = channelEscrowAddresses[packet.destChannel]
-      // unescrow tokens to receiver (assumed to fail if balance insufficient)
-      err = bank.TransferCoins(escrowAccount, data.receiver, onChainDenom, token.amount)
-      if (err != nil) {
-        ack = FungibleTokenPacketAcknowledgement{false, "transfer coins failed"}
-        // break out of for loop on first error
-        break
-      }
-    } else {
-      // since we are receiving to a new sink zone we prepend the prefix to the trace
-      prefix = "{packet.destPort}/{packet.destChannel}/"
-      newTrace = append([]string{prefix}, token.trace...)
-      onChainDenom = constructOnChainDenom(newTrace, token.denom)
-      // sender was source, mint vouchers to receiver (assumed to fail if balance insufficient)
-      err = bank.MintCoins(data.receiver, onChainDenom, token.amount)
-      if (err !== nil) {
-        ack = FungibleTokenPacketAcknowledgement{false, "mint coins failed"}
-        // break out of for loop on first error
-        break
-      }
-    }
-  }
-  return ack
-}
-```
-
-`onAcknowledgePacket` is called by the routing module when a packet sent by this module has been acknowledged.
-
-```typescript
-function onAcknowledgePacket(
-  packet: Packet,
-  acknowledgement: bytes) {
-  // if the transfer failed, refund the tokens
-  if !(acknowledgement.success) {
-    refundTokens(packet)
-  }
-}
-```
-
-`onTimeoutPacket` is called by the routing module when a packet sent by this module has timed-out (such that it will not be received on the destination chain).
-
-```typescript
-function onTimeoutPacket(packet: Packet) {
-  // the packet timed-out, so refund the tokens
-  refundTokens(packet)
-}
-```
-
-`refundTokens` is called by both `onAcknowledgePacket`, on failure, and `onTimeoutPacket`, to refund escrowed tokens to the original sender.
-
-```typescript
-function refundTokens(packet: Packet) {
-  channel = provableStore.get(channelPath(portIdentifier, channelIdentifier))
-  // getAppVersion returns the transfer version that is embedded in the channel version
-  // as the channel version may contain additional app or middleware version(s)
-  transferVersion = getAppVersion(channel.version)
-  if transferVersion == "ics20-1" {
-     FungibleTokenPacketData data = UnmarshalJSON(packet.data)
-     trace, denom = parseICS20V1Denom(data.denom)
-     token = Token{
-       denom: denom
-       trace: trace
-       amount: packet.amount
-     }
-     tokens = []Token{token}
-  } else if transferVersion == "ics20-2" {
-    FungibleTokenPacketDataV2 data = UnmarshalJSON(packet.data)
-    tokens = data.tokens
-  } else {
-    // should never be reached as transfer version must be negotiated to be either
-    // ics20-1 or ics20-2 during channel handshake
-    abortTransactionUnless(false)
-  }
-
-  prefix = "{packet.sourcePort}/{packet.sourceChannel}/"
-  for token in tokens {
-    // we are the source if the denomination is not prefixed
-    source = token.trace[0] != prefix
-    onChainDenom = constructOnChainDenom(token.trace, token.denom)
-    if source {
-      // sender was source chain, unescrow tokens back to sender
-      escrowAccount = channelEscrowAddresses[packet.sourceChannel]
-      bank.TransferCoins(escrowAccount, data.sender, onChainDenom, token.amount)
-    } else {
-      // receiver was source chain, mint vouchers back to sender
-      bank.MintCoins(data.sender, onChainDenom, token.amount)
-    }
-  }
-}
-```
-
-```typescript
-function onTimeoutPacketClose(packet: Packet) {
-  // can't happen, only unordered channels allowed
-}
-```
-
-#### Using the Memo Field
-
-Note: Since earlier versions of this specification did not include a `memo` field, implementations must ensure that the new packet data is still compatible with chains that expect the old packet data. A legacy implementation MUST be able to unmarshal a new packet data with an empty string memo into the legacy `FungibleTokenPacketData` struct. Similarly, an implementation supporting `memo` must be able to unmarshal a legacy packet data into the current struct with the `memo` field set to the empty string.
-
-The `memo` field is not used within transfer, however it may be used either for external off-chain users (i.e. exchanges) or for middleware wrapping transfer that can parse and execute custom logic on the basis of the passed in memo. If the memo is intended to be parsed and interpreted by higher-level middleware, then these middleware are advised to namespace their additions to the memo string so that they do not overwrite each other. Chains should ensure that there is some length limit on the entire packet data to ensure that the packet does not become a DOS vector. However, these do not need to be protocol-defined limits. If the receiver cannot accept a packet because of length limitations, this will lead to a timeout on the sender side.
-
-Memos that are intended to be read by higher level middleware for custom execution must be structured so that different middleware can read relevant data in the memo intended for them without interfering with data intended for other middlewares.
-
-Thus, for any memo that is meant to be interpreted by the state machine; it is recommended that the memo is a JSON object with each middleware reserving a key that it can read into and retrieve relevant data. This way the memo can be constructed to pass in information such that multiple middleware can read the memo without interference from each other.
-
-Example:
-
-```json
-{
-  "wasm": {
-    "address": "contractAddress",
-    "arguments": "marshalledArguments",
-  },
-  "callback": "contractAddress",
-  "router": "routerArgs",
-}
-```
-
-Here, the "wasm", "callback", and "router" fields are all intended for separate middlewares that will exclusively read those fields respectively in order to execute their logic. This allows multiple modules to read from the memo. Middleware should take care to reserve a unique key so that they do not accidentally read data intended for a different module. This issue can be avoided by some off-chain registry of keys already in-use in the JSON object.
-
-#### Reasoning
-
-##### Correctness
-
-This implementation preserves both fungibility & supply.
-
-Fungibility: If tokens have been sent to the counterparty chain, they can be redeemed back in the same denomination & amount on the source chain.
-
-Supply: Redefine supply as unlocked tokens. All send-recv pairs sum to net zero. Source chain can change supply.
-
-##### Multi-chain notes
-
-This specification does not directly handle the "diamond problem", where a user sends a token originating on chain A to chain B, then to chain D, and wants to return it through D -> C -> A — since the supply is tracked as owned by chain B (and the denomination will be "{portOnD}/{channelOnD}/{portOnB}/{channelOnB}/denom"), chain C cannot serve as the intermediary. It is not yet clear whether that case should be dealt with in-protocol or not — it may be fine to just require the original path of redemption (and if there is frequent liquidity and some surplus on both paths the diamond path will work most of the time). Complexities arising from long redemption paths may lead to the emergence of central chains in the network topology.
-
-In order to track all of the denominations moving around the network of chains in various paths, it may be helpful for a particular chain to implement a registry which will track the "global" source chain for each denomination. End-user service providers (such as wallet authors) may want to integrate such a registry or keep their own mapping of canonical source chains and human-readable names in order to improve UX.
-
-#### Optional addenda
-
-- Each chain, locally, could elect to keep a lookup table to use short, user-friendly local denominations in state which are translated to and from the longer denominations when sending and receiving packets. 
-- Additional restrictions may be imposed on which other machines may be connected to & which channels may be established.
-
-## Backwards Compatibility
-
-Not applicable.
-
-## Forwards Compatibility
-
-This initial standard uses version "ics20-1" in the channel handshake.
-
-A future version of this standard could use a different version in the channel handshake,
-and safely alter the packet data format & packet handler semantics.
-
-## Example Implementations
-
-- Implementation of ICS 20 in Go can be found in [ibc-go repository](https://github.com/cosmos/ibc-go).
-- Implementation of ICS 20 in Rust can be found in [ibc-rs repository](https://github.com/cosmos/ibc-rs).
-
-## History
-
-Jul 15, 2019 - Draft written
-
-Jul 29, 2019 - Major revisions; cleanup
-
-Aug 25, 2019 - Major revisions, more cleanup
-
-Feb 3, 2020 - Revisions to handle acknowledgements of success & failure
-
-Feb 24, 2020 - Revisions to infer source field, inclusion of version string
-
-July 27, 2020 - Re-addition of source field
-
-Nov 11, 2022 - Addition of a memo field
-
-Sep 22, 2023 - Support for multi-token packets
-
-March 5, 2024 - Support for ics20-2
-
-## Copyright
-
-All content herein is licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+  // 端口已被验证
+  // 断言对方选择的版本与我们的版本相同
+  channel = provable
