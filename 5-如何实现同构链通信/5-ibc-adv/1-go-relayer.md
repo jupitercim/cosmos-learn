@@ -1,72 +1,43 @@
----
-title: "Go Relayer"
-order: 2
-description: Relayer implementation in Golang
-tags:
-  - guided-coding
-  - ibc
-  - dev-ops
----
 
 # Go Relayer
 
-<HighlightBox type="prerequisite">
 
-Before you dive into Go relayers, make sure to:
 
-* Install Go.
-* Install Docker.
-* Install Rust.
 
-For all installations, please see the [setup page](/tutorials/2-setup/index.md).
+[Go relayer](https://github.com/cosmos/relayer)是一个用Golang编写的中继器实现。它可以创建客户端、连接和通道，传递数据包，以及更新和升级客户端。
 
-</HighlightBox>
+Go relayer旨在通过最少的手动配置让你的中继器快速运行，并抽象掉许多更复杂的跨区块链通信协议（IBC）概念。其目标是让用户能够自行启动中继器并传递数据包。为了提供此功能，它自动化了大量工作，从[链注册表](https://github.com/cosmos/chain-registry)获取配置信息。
 
-<HighlightBox type="learning">
+安装完成后，你将开始在主网链上中继并进行一些本地测试。
 
-Have you considered running a relayer?
-<br/><br/>
-In this section, you will learn:
+## 安装和开始
 
-* How to get started with the Go relayer.
-* Basic Go relayer commands.
+这个仓库提供了一个启动两条链的脚本，你需要它来测试中继器。
 
-</HighlightBox>
-
-[The Go relayer](https://github.com/cosmos/relayer) is a relayer implementation written in Golang. It can create clients, connections, and channels, as well as relay packets and update and upgrade clients.
-
-The Go relayer aims to get your relayer up and running with minimal manual configuration and abstracts away a lot of the more complex Inter-Blockchain Communication Protocol (IBC) concepts. The objective is that users can spin up their own relayer and relay packets. To provide this functionality, it automates a lot of work to fetch configuration data from the [chain registry](https://github.com/cosmos/chain-registry).
-
-After the installation, you will get started with relaying on mainnet chains and do some local testing.
-
-## Installation and getting started
-
-The repository offers a script to start two chains, which you need to test the relayer.
-
-<!-- TODO: once testing locally has been updated, change this text -->
+<!-- TODO: 一旦本地测试更新后，修改此文本 -->
 
 <HighlightBox type="note">
 
-The most up-to-date major version of the Go relayer is v2. This version delivered major updates and improvements, including the introduction of a provider interface to accommodate chains with different consensus types than CometBFT and event-based processing that results in performance improvements.
+Go relayer的最新主版本是v2。这个版本带来了重大更新和改进，包括引入了一个提供者接口，以适应具有不同共识类型的链（如CometBFT）和事件驱动的处理，从而提高了性能。
 <br/><br/>
-It is recommended to use this latest version, and the following commands assume you are using v2.
+建议使用这个最新版本，以下命令假设你使用的是v2。
 
 </HighlightBox>
 
-1. First, create a folder for this section:
+1. 首先，为本节创建一个文件夹：
 
   ```sh
   $ mkdir relay-go-test
   $ cd relay-go-test
   ```
 
-2. Clone the [Go relayer repository](https://github.com/cosmos/relayer):
+2. 克隆[Go relayer仓库](https://github.com/cosmos/relayer)：
 
   ```sh
   $ git clone https://github.com/cosmos/relayer.git
   ```
 
-3. Now build the Go relayer:
+3. 现在构建Go relayer：
 
   ```sh
   $ cd relayer
@@ -74,58 +45,58 @@ It is recommended to use this latest version, and the following commands assume 
   $ make install
   ```
 
-Make sure that your `$GOPATH` is set correctly and `$GOPATH/bin` is included in your `$PATH`.
+确保你的`$GOPATH`设置正确，并且`$GOPATH/bin`包含在你的`$PATH`中。
 
-To check the available commands, run the help command on the `rly` binary.
+要检查可用的命令，请运行`rly`二进制文件的帮助命令。
 
 ```sh
 $ rly -h
 ```
 
-Which returns:
+输出如下：
 
 ```txt
 rly has:
-   1. Configuration management for Chains and Paths
-   2. Key management for managing multiple keys for multiple chains
-   3. Query and transaction functionality for IBC
+   1. 链和路径的配置管理
+   2. 多链多密钥的密钥管理
+   3. IBC的查询和交易功能
 
-   NOTE: Most of the commands have aliases that make typing them much quicker
-         (i.e. 'rly tx', 'rly q', etc...)
+   注意：大多数命令都有别名，使其输入更快捷
+         (例如 'rly tx', 'rly q', 等)
 
-Usage:
-  rly [command]
+用法:
+  rly [命令]
 
-Available Commands:
-  config      Manage configuration file
-  chains      Manage chain configurations
-  paths       Manage path configurations
-  keys        Manage keys held by the relayer for each chain
+可用命令:
+  config      管理配置文件
+  chains      管理链配置
+  paths       管理路径配置
+  keys        管理中继器为每条链持有的密钥
 
-  transact    IBC transaction commands
-  query       IBC query commands
-  start       Start the listening relayer on a given path
+  transact    IBC交易命令
+  query       IBC查询命令
+  start       在给定路径上启动监听中继器
 
-  version     Print the relayer version info
-  help        Help about any command
-  completion  Generate the autocompletion script for the specified shell
+  version     打印中继器版本信息
+  help        帮助关于任何命令
+  completion  为指定的shell生成自动完成脚本
 
-Flags:
-  -d, --debug               debug output
-  -h, --help                help for rly
-      --home string         set home directory (default "/Users/<userName>/.relayer")
-      --log-format string   log output format (auto, logfmt, json, or console) (default "auto")
+标志:
+  -d, --debug               调试输出
+  -h, --help                rly的帮助
+      --home string         设置主目录 (默认 "/Users/<userName>/.relayer")
+      --log-format string   日志输出格式 (auto, logfmt, json, or console) (默认 "auto")
 
-Use "rly [command] --help" for more information about a command.
+使用 "rly [命令] --help" 获取关于某个命令的更多信息。
 ```
 
-Notice how the categories reflect the requirements you saw in the last section: to manage chain and path information, manage keys, query, and transact. The configuration data is added to the config file, stored at `$HOME/.relayer/config/config.yaml` by default. If this is the first time you run the relayer, first initialize the config with the following command:
+注意类别如何反映你在上一节中看到的要求：管理链和路径信息，管理密钥，查询和交易。配置信息被添加到配置文件中，默认情况下存储在`$HOME/.relayer/config/config.yaml`。如果这是你第一次运行中继器，请首先使用以下命令初始化配置：
 
 ```sh
 $ rly config init
 ```
 
-And check the config with:
+并检查配置：
 
 ```sh
 $ rly config show
@@ -133,84 +104,84 @@ $ rly config show
 
 <HighlightBox type="info">
 
-By default, transactions will be relayed with a memo of `rly(VERSION)` - for example, `rly(v2.0.0)`.
+默认情况下，交易将以`rly(VERSION)`的备忘录进行传递——例如`rly(v2.0.0)`。
 <br/><br/>
-To customize the memo for all relaying, use the `--memo` flag when initializing the configuration.
+要为所有中继定制备忘录，可以在初始化配置时使用`--memo`标志。
 
 ```shell
-$ rly config init --memo "My custom memo"
+$ rly config init --memo "我的自定义备忘录"
 ```
 
-Custom memos will have `rly(VERSION)` appended. For example, a memo of `My custom memo` running on relayer version `v2.0.0` would result in a transaction memo of `My custom memo | rly(v2.0.0)`.
+自定义备忘录将附加`rly(VERSION)`。例如，一个备忘录为`我的自定义备忘录`且中继器版本为`v2.0.0`的交易备忘录将为`我的自定义备忘录 | rly(v2.0.0)`。
 <br/><br/>
-The `--memo` flag is also available for other `rly` commands that involve sending transactions, such as `rly tx link` and `rly start`. It can be passed there to override the `config.yaml` value if desired.
+`--memo`标志也可用于涉及发送交易的其他`rly`命令，如`rly tx link`和`rly start`。如果需要，可以在这些命令中传递以覆盖`config.yaml`值。
 <br/><br/>
-To omit the memo entirely, including the default value of `rly(VERSION)`, use `-` for the memo.
+要完全省略备忘录，包括默认值`rly(VERSION)`，请使用`-`作为备忘录。
 
 </HighlightBox>
 
-Now you are all set to add the chains and paths you want to relay on, add your keys and start relaying. You will investigate two different scenarios: setting up a relayer between two chains on the mainnet (this would enable you to start relaying in production), and setting up two local chains for testing purposes.
+现在你已准备好添加你想要中继的链和路径，添加你的密钥并开始中继。你将研究两种不同的场景：在主网之间设置中继器（这将使你能够在生产中开始中继），以及设置两个本地链以进行测试。
 
-## Relaying in production
+## 生产中的中继
 
-As stated earlier, the Go relayer strives to get your relayer up and running in a short amount of time. You will follow the tutorial from the [Github repository](https://github.com/cosmos/relayer) to start relaying between the Cosmos Hub and Osmosis, one of the most popular paths.
+如前所述，Go relayer旨在让你的中继器在短时间内启动并运行。你将按照[Github仓库](https://github.com/cosmos/relayer)中的教程，在Cosmos Hub和Osmosis之间开始中继，这是最受欢迎的路径之一。
 
-1. Configure the chains you want to relay between.
+1. 配置你要中继的链。
 
-  In this example, you will configure the relayer to operate on the canonical path between the Cosmos Hub and Osmosis.
+在这个例子中，你将配置中继器在Cosmos Hub和Osmosis之间的规范路径上操作。
 
-  The `rly chains add` command fetches chain metadata from the [chain registry](https://github.com/cosmos/chain-registry) and adds it to your config file:
+`rly chains add`命令从[链注册表](https://github.com/cosmos/chain-registry)获取链的元数据，并将其添加到你的配置文件中：
 
   ```sh
   $ rly chains add cosmoshub osmosis
   ```
 
-  Adding chains from the chain registry randomly selects a publicly available RPC address from the registry entry. If you are running your own node (which is recommended if you are running relaying services professionally), manually go into the config and adjust the `rpc-addr` setting to the RPC endpoint you have exposed.
+从链注册表添加链会随机选择注册表条目中的一个公开可用的RPC地址。如果你正在运行自己的节点（如果你专业地运行中继服务，这是推荐的做法），请手动进入配置并将`rpc-addr`设置调整为你已暴露的RPC端点。
 
   <HighlightBox type="note">
 
-  `rly chains add` will check the liveliness of the available RPC endpoints for that chain in the chain registry. The command may fail if none of these RPC endpoints are available. In this case, you will want to manually add the chain config.
+`rly chains add`将检查链注册表中可用RPC端点的存活性。如果这些RPC端点都不可用，命令可能会失败。在这种情况下，你需要手动添加链配置。
 
   </HighlightBox>
 
-  To add the chain config files manually, example config files have been included [in the Cosmos relayer documentation](https://github.com/cosmos/relayer/tree/main/docs/example-configs/).
+要手动添加链配置文件，示例配置文件已包含在[Cosmos中继器文档](https://github.com/cosmos/relayer/tree/main/docs/example-configs/)中。
 
   ```sh
   $ rly chains add --url https://raw.githubusercontent.com/cosmos/relayer/main/docs/example-configs/cosmoshub-4.json
   $ rly chains add --url https://raw.githubusercontent.com/cosmos/relayer/main/docs/example-configs/osmosis-1.json
   ```
 
-2. Import OR create new keys for the relayer to use when signing and relaying transactions.
+2. 导入或创建新的密钥供中继器在签名和中继交易时使用。
 
   <HighlightBox type="info">
 
-  `key-name` is an identifier of your choosing.
+`key-name`是你选择的标识符。
 
   </HighlightBox>
 
-  * If you need to generate a new private key you can use the `add` subcommand:
+* 如果你需要生成一个新的私钥，你可以使用`add`子命令：
 
-    ```sh
-    $ rly keys add cosmoshub [key-name]
-    $ rly keys add osmosis [key-name]
-    ```
+  ```sh
+  $ rly keys add cosmoshub [key-name]
+  $ rly keys add osmosis [key-name]
+  ```
 
-  * If you already have a private key and want to restore it from your mnemonic you can use the `restore` subcommand:
+* 如果你已经有一个私钥并希望从助记词恢复它，你可以使用`restore`子命令：
 
-    ```sh
-    $ rly keys restore cosmoshub [key-name] "mnemonic words here"
-    $ rly keys restore osmosis [key-name] "mnemonic words here"
-    ```
+  ```sh
+  $ rly keys restore cosmoshub [key-name] "助记词"
+  $ rly keys restore osmosis [key-name] "助记词"
+  ```
 
-3. Edit the relayer's `key` values in the config file to match the `key-name`s chosen above.
+3. 编辑中继器配置文件中的`key`值以匹配上面选择的`key-name`。
 
   <HighlightBox type="info">
 
-  This step is necessary if you chose a `key-name` other than "default".
+如果你选择了`key-name`而不是“default”，此步骤是必要的。
 
   </HighlightBox>
 
-  Example:
+示例：
 
    ```yaml
    - type: cosmos
@@ -220,281 +191,83 @@ As stated earlier, the Go relayer strives to get your relayer up and running in 
      rpc-addr: http://localhost:26657
    ```
 
-4. Ensure the keys associated with the configured chains are funded.
+4. 确保与配置链关联的密钥已获得资金。
 
-  <HighlightBox type="best-practice">
+<HighlightBox type="best-pr
 
-  **ATTENTION:** Your configured addresses will need to contain some of the respective native tokens to pay relayer fees.
+actice">
+
+为了让你的中继器正常运行，建议提供足够的资金，以防止由于链中费用的突然变化而中断中继操作。
 
   </HighlightBox>
 
-  You can query the balance of each configured key by running:
+  <HighlightBox type="note">
+
+你可以检查每个链上关联的账户地址：
 
   ```sh
-  $ rly query balance cosmoshub
-  $ rly q balance osmosis
+  $ rly keys show cosmoshub [key-name]
+  $ rly keys show osmosis [key-name]
   ```
 
-5. Configure path metadata in the config file.
+  </HighlightBox>
 
-  You configured the _chain_ metadata, now you need _path_ metadata. This scenario assumes that there is already a canonical channel, so there is no need for light client creation, nor connection and channel handshakes to set these up.
+5. 配置链之间的路径。
 
-  There is one easy command to get this path information - initially from the [interchain folder](https://github.com/cosmos/relayer/tree/2.0.x/interchain) in the Go relayer repository, but this is being replaced by [IBC data in the chain registry](https://github.com/cosmos/chain-registry/tree/master/_IBC).
+  <HighlightBox type="note">
+
+你可以通过JSON文件或直接从链上拉取路径。建议直接从链上拉取路径，因为这确保了你使用的路径和通道是最新的。
+
+  </HighlightBox>
+
+从Cosmos Hub和Osmosis之间现有的规范路径创建路径配置：
 
   ```sh
-  $ rly paths fetch
+  $ rly paths add cosmoshub osmosis <path_name> --src-conn connection-0 --dst-conn connection-0
+  ```
+
+6. 创建IBC客户端、连接和通道。
+
+  <HighlightBox type="warning">
+
+尽量避免创建新的客户端和连接，除非现有的路径无法使用。通常情况下，链已经具有现有的客户端和连接，创建新的可能导致不必要的资源消耗。
+
+  </HighlightBox>
+
+使用以下命令检查链的现有客户端、连接和通道：
+
+  ```sh
+  $ rly q clients cosmoshub
+  $ rly q connections cosmoshub
+  $ rly q channels cosmoshub
   ```
 
   <HighlightBox type="note">
 
-  Do not see the path metadata for paths you want to relay on? Please open a Push Request (PR) to add this metadata to the GitHub repository!
+如果你已经找到了现有的客户端、连接和通道，你可以跳过这个步骤。否则，使用以下命令创建它们。
 
   </HighlightBox>
 
-6. Configure the channel filter.
-
-  By default, the relayer will relay packets over all channels on a given connection.
-
-  Each path has a `src-channel-filter`, which you can utilize to specify which channels you would like to relay on.
-
-  The `rule` can be one of three values:
-
-  * `allowlist`, which tells the relayer to relay on **only** the channels in `channel-list`.
-  * `denylist`, which tells the relayer to relay on all channels **except** the channels in `channel-list`.
-  * Empty value, which is the default setting and tells the relayer to relay on all channels.
-
-  Since you should only be worried about the canonical channel between the Cosmos Hub and Osmosis, our filter settings would look like the following:
-
-  Example:
-
-  ```yaml
-   hubosmo:
-    src:
-      chain-id: cosmoshub-4
-      client-id: 07-tendermint-259
-      connection-id: connection-257
-    dst:
-      chain-id: osmosis-1
-      client-id: 07-tendermint-1
-      connection-id: connection-1
-    src-channel-filter:
-      rule: allowlist
-      channel-list: [channel-141]
+  ```sh
+  $ rly tx link <path_name>
   ```
+
+7. 启动中继器。
 
   <HighlightBox type="info">
 
-  Because two channels between chains are tightly coupled, there is no need to specify the dst channels.
+`rly start`命令将开始监听配置路径上的交易并自动中继它们。
 
   </HighlightBox>
 
-7. Do a status check.
-
-  Before starting to relay and after making some changes to the config, you can check the status of the chains and paths in the config:
-
   ```sh
-  $ rly chains list
+  $ rly start <path_name>
   ```
 
-  Which returns this output when healthy:
+---
 
-  ```txt
-  0: cosmoshub-4          -> type(cosmos) key(✔) bal(✔) path(✔)
-  1: osmosis-1            -> type(cosmos) key(✔) bal(✔) path(✔)
-  ```
+<HighlightBox type="success">
 
-  ```sh
-  $ rly paths list
-  ```
-
-  Which returns this output when healthy:
-
-  ```txt
-  0: cosmoshub-osmosis              -> chns(✔) clnts(✔) conn(✔) (cosmoshub-4<>osmosis-1)
-  ```
-
-  In case one of the checks receives a `✘` instead of `✔`, you will need to check if you completed all the previous steps correctly.
-
-8. Finally, start the relayer on the desired path.
-
-  The relayer will periodically update the clients and listen for IBC messages to relay.
-
-  ```sh
-  $ rly start [path]
-  ```
-
-  The relayer now has an event processor added to respond to emitted events signaling an IBC packet event. You can use it by adding an additional flag:
-
-  ```sh
-  $ rly start [path] -p events
-  ```
-
-  You will need to start a separate shell instance for each path you wish to relay over.
-
-  When running multiple instances of `rly start`, you will need to use the `--debug-addr` flag and provide an `address:port`. You can also pass an empty string `''` to turn off this feature, or pass `localhost:0` to randomly select a port.
-
-## Testing locally
-
-Besides running a relayer between mainnet chains, you can also run a relayer between public testnet chains, or run chains locally to do some testing of particular scenarios. Here you will use a `docker-compose` network with two local `checkers` chains and a relayer between them.
-
-<HighlightBox type="note">
-
-The example presented is based on the demo in the [b9lab/cosmos-ibc-docker](https://github.com/b9lab/cosmos-ibc-docker/tree/main/tokentransfer) repository.
+你现在已经配置并启动了你的Go relayer。🎉
 
 </HighlightBox>
-
-Start by cloning the repository:
-
-```sh
-$ git clone https://github.com/b9lab/cosmos-ibc-docker.git
-```
-
-<HighlightBox type="info">
-
-Make sure that you have installed [Docker Compose](https://docs.docker.com/compose/install/) and [Docker](https://docs.docker.com/get-docker/) before continuing.
-
-</HighlightBox>
-
-Then build the **images for the checkers blockchain**:
-
-```sh
-$ cd cosmos-ibc-docker/tokentransfer/checkers
-$ ./build-images.sh
-```
-
-You can build the relayer image manually, or just start the network via `docker-compose` and let it build the missing image for the `ibc-go` relayer:
-
-```sh
-$ cd cosmos-ibc-docker/tokentransfer
-$ docker-compose -f tokentransfer.yml --profile go up
-```
-
-Observe the output of `docker-compose` until the chains are ready - the chains will take some time.
-
-When the chains are ready, start the relayer process. In a new terminal, jump into the relayer container:
-
-```sh
-$ docker exec -it relayer bash
-```
-
-The demo includes a script to start the relayer, but do the steps manually to practice a bit.
-
-First, initialize the configuration:
-
-```sh
-$ rly config init
-$ rly chains add-dir configs
-$ rly paths add-dir paths
-```
-
-<HighlightBox type="info">
-
-You can find the `configs` and `paths` folders in the folder `cosmos-ibc-docker/tokentransfer/relayer_go`. In the `checkersa.json` and `checkersb.json`, you can find the endpoints of the chains and a default key alias.
-
-</HighlightBox>
-
-Populate the aliases:
-
-```sh
-$ rly keys restore checkersa alice "cinnamon legend sword giant master simple visit action level ancient day rubber pigeon filter garment hockey stay water crawl omit airport venture toilet oppose"
-$ rly keys restore checkersb bob "define envelope federal move soul panel purity language memory illegal little twin borrow menu mule vote alter bright must deal sight muscle weather rug"
-```
-
-The mnemonics are set in the checkers blockchains, take _alice_ from `checkersa` and _bob_ from `checkersb`.
-
-Now check if the chains and path(s) are ready to relay over:
-
-```sh
-$ rly chains list
-$ rly paths list
-```
-
-You can now connect the two chains with the `link` command.
-
-<HighlightBox type="note">
-
-The relayer will check if any clients, connections, and channels are present for the given path. If not, the `link` command will attempt to create the missing objects.
-
-</HighlightBox>
-
-You can also check `rly tx -h` to find the separate commands for these actions.
-
-```sh
-$ rly tx link demo -d -t 3s
-```
-
-Next, check the token balances on both chains:
-
-```sh
-$ rly q balance checkersa --ibc-denoms
-$ rly q bal checkersb -i
-```
-
-Finally, send some tokens between the chains:
-
-```sh
-$ rly tx transfer checkersa checkersb 10token $(rly chains address checkersb) channel-0
-```
-
-<HighlightBox type="note">
-
-The default key used for checkersa is _alice_.
-
-</HighlightBox>
-
-`$(rly chains address checkersb)` will give the address of _bob_.
-
-You created the commitment proof on `checkersa` to send the packet, but no relaying has taken place yet.
-
-### Relay packets/acknowledgements
-
-Running `rly start demo` would essentially loop these two commands:
-
-```sh
-$ rly tx relay-pkts demo channel-0 -d
-$ rly tx relay-acks demo channel-0 -d
-```
-
-Check that the transfer was completed:
-
-```sh
-$ rly q bal checkersa -i
-$ rly q bal checkersb -i
-```
-
-You can see that the tokens have a denom on the `checkersb` chain because they are not native `token`s of `checkersb`. Send the tokens back to the account on `checkersa` by replacing `$denom` (this will be something like `ibc/D11F61D9F5E49A31348A7CD2DECE888D4DFEE1DADA343F7D8D4502BFA9496936`):
-
-```sh
-$ rly tx transfer checkersb checkersa 10$denom $(rly chains addr checkersa) channel-0
-$ rly tx relay-pkts demo channel-0 -d
-$ rly tx relay-acks demo channel-0 -d
-```
-
-Check that the return trip was completed:
-
-```sh
-$ rly q bal checkersa -i
-$ rly q bal checkersb -i
-```
-
-You can see that the stake balances decreased on each chain because of the set fees in the configuration.
-
-If you are finished with the tests, make sure to shut down your network with:
-
-```sh
-$ docker-compose -f tokentransfer.yml --profile go down
-```
-
-<HighlightBox type="synopsis">
-
-To summarize, this section has explored:
-
-* The Go relayer, a relayer implementation written in Golang that can create clients, connections, and channels, as well as relay packets, and update and upgrade clients.
-* How the Go relayer requires minimal manual configuration and abstracts away many more complex IBC concepts by automating a lot of work to fetch configuration data from the chain registry.
-* How to install and configure the Go relayer, and how to run it between public testnet chains or locally run chains to conveniently test particular scenarios.
-
-</HighlightBox>
-
-<!--## Next up
-
-After having taken a look at the Go relayer, it is now time to turn to the Hermes relayer in the [next section](./2-hermes-relayer.md).-->
